@@ -10,7 +10,6 @@
         $address = $_POST["address"];
     }
 
-    echo "$name";
 
 ?>
 
