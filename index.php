@@ -1,69 +1,60 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of Users</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css
-">
-</head>
-<body>
+
+<?php include("components/head.php"); ?>
+
     <h1>List of users</h1>
-<button type="button" class="btn btn-primary">Add new user</button>
+<a type="button" class="btn btn-primary m-5" href="/PHP_USER_LIST/create.php">Add new user</a>
 <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
-      <th scope="col">Address</th>
-      <th scope="col">Created</th>
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody>
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Address</th>
+        <th scope="col">Created</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
 
-    <?php 
-    
-        $servername = "localhost";
-        $username = "shaun";
-        $password = "wt@gv)F]iGFqnC5Q";
-        $database = "myuserlist";
+      <?php 
 
-        // Create connection
-        $connection = new mysqli($servername, $username, $password, $database);
+      include('connectionDB/connection.php');
 
-        // Check connection
-        if($connection->connect_error) {
-            die("Connection failed: " . $connection->connect_error);
+          // Check connection
+          if($connection->connect_error) {
+              die("Connection failed: " . $connection->connect_error);
+          }
+
+          // read all row from database table
+          $sql = "SELECT * FROM users";
+          $result = $connection->query($sql);
+
+          if(!$result) {
+              die("Invalid query: " . $connection->error);
+          }
+
+          // read data
+        while($row = $result->fetch_assoc()) {
+          echo "
+
+            <tr>
+              <td>$row[id]</td>
+              <td>$row[name]</td>
+              <td>$row[email]</td>
+              <td>$row[address]</td>
+              <td>$row[created_at]</td>
+                <td>
+                  <a class='btn btn-primary btn-sm' href='/PHP_USER_LIST/edit.php?id=$row[id]'>Edit</a>
+                  <a class='btn btn-danger btn-sm' href='/PHP_USER_LIST/delete.php?id=$row[id]'>Delete</a>
+                </td>
+            </tr>
+          
+          ";
         }
+      
+      ?>
 
-        // read all row from database table
-        $sql = "SELECT * FROM users";
-        $result = $connection->query($sql);
-
-        if(!$result) {
-            die("Invalid query: " . $connection->error);
-        }
-
-        // read data
-        $row = $result->fetch_assoc();
-    
-    ?>
-
-    <tr>
-      <th scope="row">1</th>
-      <td><?php echo $row["id"] ?></td>
-      <td><?php echo $row["email"] ?></td>
-      <td><?php echo $row["address"] ?></td>
-      <td><?php echo $row["created_at"] ?></td>
-      <td>
-      <button type="button" class="btn btn-primary">Edit</button>
-      <button type="button" class="btn btn-danger">Delete</button>
-      </td>
-    </tr>
-  </tbody>
+    </tbody>
 </table>
 </body>
 </html>

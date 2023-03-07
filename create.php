@@ -1,41 +1,67 @@
 <?php 
 
+    include('connectionDB/connection.php');
+
     $name = "";
     $email = "";
     $address = "";
+
+    $errorMessage = "";
+    $succesMessage = "";
 
     if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $name = $_POST["name"];
         $email = $_POST["email"];
         $address = $_POST["address"];
-    }
 
+        if( empty($name) || empty($email) || empty($address) ) {
+            echo "
+                <div class='alert alert-warning alert-dismissible fade show' role='alert'>
+                    <strong>All fields are required</strong>
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>
+            ";
+        } else if(!(empty($name) || empty($email) || empty($address)) ) {
+            echo "";
+
+            // add new user in database
+            $sql = "INSERT INTO users (name, email, address) VALUES ('$name', '$email', '$address')";
+            $result = $connection->query($sql);
+
+            if(!$result) {
+                $errorMessage = "Invalid query: " . $connection->error;
+            }
+
+            $name = "";
+            $email = "";
+            $address = "";
+
+            header("location: /PHP_USER_LIST/index.php");
+            exit;
+        } 
+    }
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css
-">
-</head>
-<body>
-    <h2>Add new user</h2>
-    <form class="border p-3 w-50 rounded">
+<?php include("components/head.php"); ?>
+
+    <h2 class="m-5">Add new user</h2>
+    <?php echo "$errorMessage"; ?>
+    <?php echo "$succesMessage"; ?>
+    <form class="border p-3 rounded" method="post">
         <div class="mb-3">
-            <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Full Name" value="<?php echo $name ?>">
+            <input name="name" type="text" class="form-control" aria-describedby="emailHelp" placeholder="Full Name" value="<?php echo $name ?>">
         </div>
         <div class="mb-3">
-            <input type="email" class="form-control" aria-describedby="emailHelp" placeholder="E-Mail" value="<?php echo $email ?>">
+            <input name="email" type="email" class="form-control" aria-describedby="emailHelp" placeholder="E-Mail" value="<?php echo $email ?>">
         </div>
         <div class="mb-3">
-            <input type="text" class="form-control" aria-describedby="emailHelp" placeholder="Address" value="<?php echo $address ?>">
+            <input name="address" type="text" class="form-control" aria-describedby="emailHelp" placeholder="Address" value="<?php echo $address ?>">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-success">Submit</button>
+            <a type="submit" class="btn btn-secondary" href="/PHP_USER_LIST/index.php" >Cancel</a>
+        </div>
+    </form>
 </body>
 </html>
